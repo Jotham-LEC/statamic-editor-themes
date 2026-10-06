@@ -2,7 +2,7 @@
 
 Ten popular editor colour schemes for the Statamic 6 control panel, each in a light and a dark version: Catppuccin, Dracula, Everforest, Gruvbox, Kanagawa, Nord, One, Rosé Pine, Solarized and Tokyo Night. They show up in Statamic's own theme picker, so you choose one the same way you would choose any other theme. Works on Statamic Core and Pro.
 
-![The ten themes, light and dark](art/themes.jpg)
+![The ten themes, light and dark](https://raw.githubusercontent.com/Jotham-LEC/statamic-editor-themes/main/art/themes.jpg)
 
 | Theme | Light mode | Dark mode |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ php please editor-themes:remove jo@example.com           # back to Statamic's de
 
 The theme ids are `catppuccin`, `dracula`, `everforest`, `gruvbox`, `kanagawa`, `nord`, `one`, `rose-pine`, `solarized` and `tokyo-night`.
 
-![The themes in Statamic's theme picker](art/picker.png)
+![The themes in Statamic's theme picker](https://raw.githubusercontent.com/Jotham-LEC/statamic-editor-themes/main/art/picker.png)
 
 ## How the colours are chosen
 
