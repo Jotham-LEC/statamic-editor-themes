@@ -1,16 +1,43 @@
 {
-    "name": "jotham-lec/statamic-gruvbox",
-    "description": "Gruvbox light and dark for the Statamic 6 control panel.",
+    "name": "jotham-lec/statamic-editor-themes",
+    "description": "Gruvbox, Catppuccin, Dracula, Tokyo Night, Everforest, Nord, Rosé Pine, Kanagawa, Solarized and One, light and dark, for the Statamic 6 control panel.",
+    "keywords": [
+        "statamic",
+        "statamic-addon",
+        "theme",
+        "control-panel",
+        "dark-mode",
+        "gruvbox",
+        "catppuccin",
+        "dracula",
+        "tokyo-night",
+        "everforest",
+        "nord",
+        "rose-pine",
+        "kanagawa",
+        "solarized",
+        "one-dark"
+    ],
     "type": "statamic-addon",
-    "license": "proprietary",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jotham Lim",
+            "email": "jotham@cothink.ing"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/Jotham-LEC/statamic-editor-themes/issues",
+        "source": "https://github.com/Jotham-LEC/statamic-editor-themes"
+    },
     "autoload": {
         "psr-4": {
-            "JothamLec\\Gruvbox\\": "src"
+            "JothamLec\\EditorThemes\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "JothamLec\\Gruvbox\\Tests\\": "tests"
+            "JothamLec\\EditorThemes\\Tests\\": "tests"
         }
     },
     "require": {
@@ -31,13 +58,12 @@
     },
     "extra": {
         "statamic": {
-            "name": "Gruvbox",
-            "description": "Gruvbox light and dark for the control panel",
-            "slug": "gruvbox"
+            "name": "Editor Themes",
+            "description": "Popular editor colour schemes, light and dark, for the control panel"
         },
         "laravel": {
             "providers": [
-                "JothamLec\\Gruvbox\\ServiceProvider"
+                "JothamLec\\EditorThemes\\ServiceProvider"
             ]
         }
     },

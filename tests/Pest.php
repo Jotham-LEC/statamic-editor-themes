@@ -1,5 +1,5 @@
 <?php
 
-use JothamLec\Gruvbox\Tests\TestCase;
+use JothamLec\EditorThemes\Tests\TestCase;
 
 uses(TestCase::class)->in('Feature');

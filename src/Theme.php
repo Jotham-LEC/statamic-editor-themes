@@ -1,66 +1,77 @@
 <?php
 
-namespace JothamLec\Gruvbox;
+namespace JothamLec\EditorThemes;
+
+use Illuminate\Support\Str;
 
 /**
- * Gruvbox (github.com/morhetz/gruvbox) as a Statamic control-panel theme, in
- * the shape Statamic saves a user's `theme` preference: an id, a name, and
- * the colours, with dark mode's as `dark-` keys beside the light ones.
+ * An editor colour scheme as a Statamic control-panel theme: a light variant
+ * and a dark one, each a grey ramp and five accents.
  *
- * Statamic's grey ramp runs from the page (50) to the darkest surface (950),
- * and dark mode draws from its dark end, so Gruvbox's neutrals, from light
- * cream to dark bg0_h, are one ramp for both modes. Only the accents
- * change: Gruvbox's faded colours on cream, its bright ones on dark.
+ * Statamic's grey ramp runs from the page (50) to the darkest surface (950)
+ * in both modes. In light mode the page is the light end, in dark mode the
+ * dark end, and the other end is the text. Each variant places its palette's
+ * neutrals at the shades they suit, and Ramp mixes the rest.
+ *
+ * The accents are `blue` for links, `green` for success and switches, `red`
+ * for danger, `yellow` for the progress bar and `aqua` for focus, each the
+ * palette's nearest colour, and Contrast takes any too pale to read darker.
+ * Buttons carry white text, so they take the light variant's blue in both
+ * modes, or `BUTTON`.
  */
-final class Theme
+abstract class Theme
 {
-    /** The neutrals, light to dark. */
-    public const array GRAYS = [
-        // Gruvbox's lightest cream three quarters of the way to white: Statamic's
-        // buttons and dropdowns fade from white to gray-50, so this keeps the fade faint.
-        50 => '#fdfcf5',
-        100 => '#fbf1c7', // bg0
-        150 => '#f2e5bc', // bg0_s
-        200 => '#ebdbb2', // bg1
-        300 => '#d5c4a1', // bg2
-        400 => '#bdae93', // bg3
-        500 => '#928374', // gray
-        600 => '#7c6f64', // bg4 (dark)
-        700 => '#665c54', // bg3
-        800 => '#504945', // bg2
-        850 => '#3c3836', // bg1
-        900 => '#32302f', // bg0_s
-        925 => '#282828', // bg0
-        950 => '#1d2021', // bg0_h
-    ];
+    public const string NAME = '';
 
-    /** Gruvbox's faded accents, for a cream ground. */
-    public const array LIGHT = [
-        'red' => '#9d0006',
-        'green' => '#79740e',
-        'yellow' => '#b57614',
-        'blue' => '#076678',
-        'aqua' => '#427b58',
-    ];
+    /** Where the palette comes from, for the credits. */
+    public const string SOURCE = '';
 
-    /** Gruvbox's bright accents, for a dark ground. */
-    public const array DARK = [
-        'red' => '#fb4934',
-        'green' => '#b8bb26',
-        'yellow' => '#fabd2f',
-        'blue' => '#83a598',
-        'aqua' => '#8ec07c',
-    ];
+    /** @var array<int, string> */
+    public const array LIGHT_GRAYS = [];
+
+    /** @var array<int, string> */
+    public const array DARK_GRAYS = [];
+
+    /** @var array{blue: string, green: string, red: string, yellow: string, aqua: string} */
+    public const array LIGHT = [];
+
+    /** @var array{blue: string, green: string, red: string, yellow: string, aqua: string} */
+    public const array DARK = [];
+
+    /** The button colour, under white text; the light blue unless set. */
+    public const ?string BUTTON = null;
+
+    public static function id(): string
+    {
+        return Str::slug(static::NAME);
+    }
 
     /**
-     * The `theme` preference. `custom` opens it in the theme picker's Custom
-     * tab, where its colours can be changed.
+     * The `theme` preference, as the control panel's theme picker saves it.
      *
      * @return array{id: string, name: string, colors: array<string, string>}
      */
     public static function preference(): array
     {
-        return ['id' => 'custom', 'name' => 'Gruvbox', 'colors' => self::colors()];
+        return ['id' => static::id(), 'name' => static::NAME, 'colors' => static::colors()];
+    }
+
+    /**
+     * The theme as the theme picker lists it, dark colours without their prefix.
+     *
+     * @return array{id: string, name: string, author: string, colors: array<string, string>, darkColors: array<string, string>}
+     */
+    public static function picker(): array
+    {
+        [$dark, $light] = collect(static::colors())->partition(fn (string $color, string $key) => str_starts_with($key, 'dark-'));
+
+        return [
+            'id' => static::id(),
+            'name' => static::NAME,
+            'author' => 'Editor Themes',
+            'colors' => $light->all(),
+            'darkColors' => $dark->mapWithKeys(fn (string $color, string $key) => [substr($key, 5) => $color])->all(),
+        ];
     }
 
     /**
@@ -68,36 +79,46 @@ final class Theme
      */
     public static function colors(): array
     {
-        $grays = collect(self::GRAYS)->mapWithKeys(fn (string $color, int $shade) => ["gray-{$shade}" => $color])->all();
+        // Unless a theme sets it, gray-50 is the 100 shade most of the way to white: in
+        // light mode Statamic's buttons and dropdowns fade from white to it, so it stays near white.
+        $light = Ramp::fill(static::LIGHT_GRAYS + [50 => Ramp::mix(static::LIGHT_GRAYS[100], '#ffffff', 0.75)]);
+        $dark = Ramp::fill(static::DARK_GRAYS + [50 => Ramp::mix(static::DARK_GRAYS[100], '#ffffff', 0.5)]);
+        [$l, $d] = [static::LIGHT, static::DARK];
+        [$ground, $darkGround] = [$light[100], $dark[925]];
+
+        // Text at 4.5:1; switches, status colours and the focus ring at 3:1.
+        $button = Contrast::ensure(static::BUTTON ?? $l['blue'], '#ffffff', 4.5);
+        $switch = Contrast::ensure($l['green'], '#ffffff', 3);
 
         return [
-            // Buttons and selections carry white text, so they keep the faded blue in both modes.
-            'primary' => self::LIGHT['blue'],
-            'ui-accent-bg' => self::LIGHT['blue'],
-            'ui-accent-text' => self::LIGHT['blue'],
-            'global-header-bg' => self::GRAYS[850],
-            'body-bg' => self::GRAYS[150],
+            'primary' => $button,
+            'ui-accent-bg' => $button,
+            'ui-accent-text' => Contrast::ensure($l['blue'], $ground, 4.5),
+            'global-header-bg' => $light[850],
+            'body-bg' => $light[150],
             'body-border' => 'transparent',
-            'content-bg' => self::GRAYS[100],
-            'content-border' => self::GRAYS[300],
-            'progress-bar' => self::LIGHT['yellow'],
-            'focus-outline' => self::LIGHT['aqua'],
-            'switch-bg' => self::LIGHT['green'],
-            'success' => self::LIGHT['green'],
-            'danger' => self::LIGHT['red'],
-            ...$grays,
+            'content-bg' => $ground,
+            'content-border' => $light[300],
+            'progress-bar' => $l['yellow'],
+            'focus-outline' => Contrast::ensure($l['aqua'], $ground, 3),
+            'switch-bg' => $switch,
+            'success' => Contrast::ensure($l['green'], $ground, 3),
+            'danger' => Contrast::ensure($l['red'], $ground, 3),
+            ...collect($light)->mapWithKeys(fn (string $color, int $shade) => ["gray-{$shade}" => $color]),
 
-            'dark-ui-accent-text' => self::DARK['blue'],
-            'dark-global-header-bg' => self::GRAYS[950],
-            'dark-body-bg' => self::GRAYS[950],
-            'dark-body-border' => self::GRAYS[950],
-            'dark-content-bg' => self::GRAYS[925],
-            'dark-content-border' => self::GRAYS[850],
-            'dark-progress-bar' => self::DARK['yellow'],
-            'dark-focus-outline' => self::DARK['aqua'],
-            'dark-switch-bg' => self::LIGHT['green'],
-            'dark-success' => self::DARK['green'],
-            'dark-danger' => self::DARK['red'],
+            'dark-ui-accent-text' => Contrast::ensure($d['blue'], $darkGround, 4.5),
+            'dark-global-header-bg' => $dark[950],
+            'dark-body-bg' => $dark[950],
+            'dark-body-border' => $dark[950],
+            'dark-content-bg' => $darkGround,
+            'dark-content-border' => $dark[850],
+            'dark-progress-bar' => $d['yellow'],
+            'dark-focus-outline' => Contrast::ensure($d['aqua'], $darkGround, 3),
+            // Switches carry a white knob in both modes.
+            'dark-switch-bg' => $switch,
+            'dark-success' => Contrast::ensure($d['green'], $darkGround, 3),
+            'dark-danger' => Contrast::ensure($d['red'], $darkGround, 3),
+            ...collect($dark)->mapWithKeys(fn (string $color, int $shade) => ["dark-gray-{$shade}" => $color]),
         ];
     }
 }

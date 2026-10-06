@@ -1,65 +1,49 @@
 <?php
 
-namespace JothamLec\Gruvbox\Commands;
+namespace JothamLec\EditorThemes\Commands;
 
 use Illuminate\Console\Command;
-use JothamLec\Gruvbox\Theme;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
+use JothamLec\EditorThemes\Themes;
 use Statamic\Console\RunsInPlease;
-use Statamic\Contracts\Auth\User as UserContract;
-use Statamic\Facades\User;
+
+use function Laravel\Prompts\select;
 
 /**
- * `php please gruvbox:apply [email] [--remove]`: sets Gruvbox as a user's
- * control-panel theme. It is saved in that user's preferences, so it follows
- * them to every browser and device; Preferences → Themes changes it back.
- * Without an email, a site with one user applies it to that user.
+ * `php please editor-themes:apply {theme} [email]`: sets a theme as a user's
+ * control-panel theme, as picking it in Preferences → Themes would. Without
+ * an email, a site with one user applies it to that user.
  */
-class Apply extends Command
+class Apply extends Command implements PromptsForMissingInput
 {
-    use RunsInPlease;
+    use FindsUser, RunsInPlease;
 
-    protected $signature = 'statamic:gruvbox:apply {email? : The user to theme} {--remove : Remove the theme instead}';
+    protected $signature = 'statamic:editor-themes:apply {theme : The theme, e.g. gruvbox} {email? : The user to theme}';
 
-    protected $description = 'Set Gruvbox as a user\'s control-panel theme';
+    protected $description = 'Set a user\'s control-panel theme';
 
     public function handle(): int
     {
-        $user = $this->user();
+        $theme = Themes::find($this->argument('theme'));
 
-        if (! $user) {
+        if (! $theme) {
+            $this->components->error('No theme is called '.$this->argument('theme').'. The themes: '.Themes::all()->keys()->implode(', ').'.');
+
             return self::FAILURE;
         }
 
-        if ($this->option('remove')) {
-            $user->removePreference('theme')->save();
-            $this->components->info("Removed the theme for {$user->email()}.");
-
-            return self::SUCCESS;
+        if (! $user = $this->user()) {
+            return self::FAILURE;
         }
 
-        $user->setPreference('theme', Theme::preference())->save();
-        $this->components->info("Gruvbox is now the theme for {$user->email()}. Reload the control panel.");
+        $user->setPreference('theme', $theme::preference())->save();
+        $this->components->info($theme::NAME." is now the theme for {$user->email()}. Reload the control panel.");
 
         return self::SUCCESS;
     }
 
-    private function user(): ?UserContract
+    protected function promptForMissingArgumentsUsing(): array
     {
-        if ($email = $this->argument('email')) {
-            $user = User::findByEmail($email);
-            $user ?? $this->components->error("No user has the email {$email}.");
-
-            return $user;
-        }
-
-        $users = User::all();
-
-        if ($users->count() !== 1) {
-            $this->components->error('Name the user by email: this site has '.$users->count().' users.');
-
-            return null;
-        }
-
-        return $users->first();
+        return ['theme' => fn () => select('Which theme?', Themes::all()->map(fn (string $theme) => $theme::NAME)->all())];
     }
 }

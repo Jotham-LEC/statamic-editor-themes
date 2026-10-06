@@ -1,8 +1,8 @@
 <?php
 
-namespace JothamLec\Gruvbox\Tests;
+namespace JothamLec\EditorThemes\Tests;
 
-use JothamLec\Gruvbox\ServiceProvider;
+use JothamLec\EditorThemes\ServiceProvider;
 use Statamic\Testing\AddonTestCase;
 use Statamic\Testing\Concerns\PreventsSavingStacheItemsToDisk;
 
