@@ -1,0 +1,43 @@
+/* Gruvbox leans on solid fills and borders. Statamic's buttons draw a
+   gradient (bg-linear-to-b from-… to-…), a gloss and a drop shadow; these
+   rules keep each button's border and give it one solid colour instead.
+   Unlayered, so they win over Tailwind's layered utilities, hover included. */
+:is(button, a).bg-linear-to-b {
+    background-image: none;
+    --tw-shadow: 0 0 #0000;
+    --tw-inset-shadow: 0 0 #0000;
+}
+
+/* The default button. */
+:is(button, a).bg-linear-to-b.from-white {
+    background-color: var(--theme-color-gray-50);
+}
+:is(button, a).bg-linear-to-b.from-white:hover:not(:disabled) {
+    background-color: var(--theme-color-gray-200);
+}
+.dark :is(button, a).bg-linear-to-b.from-white {
+    background-color: var(--theme-color-gray-850);
+}
+.dark :is(button, a).bg-linear-to-b.from-white:hover:not(:disabled) {
+    background-color: var(--theme-color-gray-800);
+}
+
+/* Primary (Save, Run report), and danger. */
+:is(button, a).bg-linear-to-b.from-primary\/90 {
+    background-color: var(--theme-color-primary);
+}
+:is(button, a).bg-linear-to-b.from-red-600\/90 {
+    background-color: var(--theme-color-danger);
+    border-color: var(--theme-color-danger);
+}
+:is(button, a).bg-linear-to-b:is(.from-primary\/90, .from-red-600\/90):hover:not(:disabled) {
+    filter: brightness(0.9);
+}
+
+/* A pressed toggle. */
+:is(button, a).bg-linear-to-b.from-gray-200 {
+    background-color: var(--theme-color-gray-200);
+}
+.dark :is(button, a).bg-linear-to-b.from-gray-200 {
+    background-color: var(--theme-color-gray-950);
+}

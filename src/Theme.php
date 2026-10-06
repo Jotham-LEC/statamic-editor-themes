@@ -2,6 +2,8 @@
 
 namespace JothamLec\Gruvbox;
 
+use Statamic\Facades\Preference;
+
 /**
  * Gruvbox (github.com/morhetz/gruvbox) as a Statamic control-panel theme, in
  * the shape Statamic saves a user's `theme` preference: an id, a name, and
@@ -59,6 +61,24 @@ final class Theme
     public static function preference(): array
     {
         return ['id' => 'custom', 'name' => 'Gruvbox', 'colors' => self::colors()];
+    }
+
+    /**
+     * Whether the person looking at the control panel uses this theme.
+     */
+    public static function isActive(): bool
+    {
+        $theme = Preference::get('theme');
+
+        return is_array($theme) && ($theme['name'] ?? null) === self::preference()['name'];
+    }
+
+    /**
+     * What colours alone cannot do: solid, bordered buttons without gradients.
+     */
+    public static function css(): string
+    {
+        return (string) file_get_contents(__DIR__.'/../resources/css/gruvbox.css');
     }
 
     /**

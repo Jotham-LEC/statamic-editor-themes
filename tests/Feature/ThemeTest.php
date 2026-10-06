@@ -76,3 +76,15 @@ test('with several users it asks which; an unknown email fails', function () {
     expect(User::findByEmail('b@example.test')->preferences()['theme'] ?? null)->toBe(Theme::preference())
         ->and(User::findByEmail('a@example.test')->preferences()['theme'] ?? null)->toBeNull();
 });
+
+test('the control panel gets Gruvbox\'s solid buttons only while someone uses the theme', function () {
+    $user = tap(User::make()->email('jo@example.test')->makeSuper()->setPreference('theme', Theme::preference()))->save();
+
+    $this->actingAs($user)->get(cp_route('dashboard'))->assertOk()
+        ->assertSee('<style id="gruvbox">', false)
+        ->assertSee('background-image: none', false);
+
+    $user->removePreference('theme')->save();
+
+    $this->actingAs($user)->get(cp_route('dashboard'))->assertOk()->assertDontSee('<style id="gruvbox">', false);
+});

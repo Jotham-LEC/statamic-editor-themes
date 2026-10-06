@@ -23,6 +23,8 @@ Statamic Core keeps a theme per user; a default theme for everyone, or per role,
 
 `src/Theme.php`. Statamic's grey ramp (50 to 950) is Gruvbox's fourteen neutrals, from light `bg0_h` `#f9f5d7` to dark `bg0_h` `#1d2021`, and serves both modes. Accents are Gruvbox's faded colours on cream and its bright ones on dark: blue for buttons and links, green for success and switches, red for danger, yellow for the progress bar, aqua for focus. Buttons keep the faded blue in dark mode, as they carry white text.
 
+Colours alone can't take the gradient, gloss and shadow off Statamic's buttons, so `resources/css/gruvbox.css` makes them solid fills with their border. It is printed into the control panel's head only for someone whose theme is Gruvbox.
+
 ## Develop
 
 ```bash
