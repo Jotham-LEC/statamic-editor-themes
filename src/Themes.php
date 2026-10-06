@@ -3,6 +3,7 @@
 namespace JothamLec\EditorThemes;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 final class Themes
 {
@@ -26,9 +27,9 @@ final class Themes
         return collect(self::ALL)->keyBy(fn (string $theme) => $theme::id());
     }
 
-    /** @return class-string<Theme>|null */
-    public static function find(string $id): ?string
+    /** A theme by id or by name, e.g. `tokyo-night` or `Tokyo Night`. */
+    public static function find(string $idOrName): ?string
     {
-        return self::all()->get($id);
+        return self::all()->get(Str::slug($idOrName));
     }
 }

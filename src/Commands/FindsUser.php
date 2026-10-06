@@ -17,10 +17,10 @@ trait FindsUser
             return $user;
         }
 
-        $users = User::all();
+        $users = User::query()->limit(2)->get();
 
         if ($users->count() !== 1) {
-            $this->components->error('Name the user by email: this site has '.$users->count().' users.');
+            $this->components->error($users->isEmpty() ? 'This site has no users.' : 'Name the user by email: this site has more than one user.');
 
             return null;
         }

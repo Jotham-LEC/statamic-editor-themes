@@ -9,8 +9,6 @@ final class Kanagawa extends Theme
 {
     public const string NAME = 'Kanagawa';
 
-    public const string SOURCE = 'https://github.com/rebelot/kanagawa.nvim';
-
     public const array LIGHT_GRAYS = [
         100 => '#f2ecbc', // lotusWhite3
         150 => '#e5ddb0', // lotusWhite2

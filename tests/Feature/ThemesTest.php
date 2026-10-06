@@ -27,15 +27,18 @@ dataset('themes', fn () => Themes::all()->all());
 test('every theme sets every colour Statamic themes, in light mode and dark, as hex', function (string $theme) {
     $colors = $theme::colors();
 
-    expect(array_diff(array_keys(Color::defaults()), array_keys($colors)))->toBe([])
+    expect(array_values(array_diff(array_keys(Color::defaults()), array_keys($colors))))->toBe(['body-border'])
         ->and(array_diff(array_keys(Color::defaults(dark: true)), array_keys($colors)))->toBe([]);
 
     foreach (Ramp::SHADES as $shade) {
         expect($colors)->toHaveKey("dark-gray-{$shade}");
     }
 
-    foreach ($colors as $key => $color) {
-        expect($color)->toMatch($key === 'body-border' ? '/^transparent$/' : '/^#[0-9a-f]{6}$/');
+    // body-border is left at Statamic's default, as the picker saves it.
+    expect($colors)->not->toHaveKey('body-border');
+
+    foreach ($colors as $color) {
+        expect($color)->toMatch('/^#[0-9a-f]{6}$/');
     }
 })->with('themes');
 
@@ -51,31 +54,42 @@ test('each grey ramp runs from light to dark', function (string $theme) {
     }
 })->with('themes');
 
-test('text reads at 4.5:1, and status colours, switches, focus and muted text at 3:1, in both modes', function (string $theme) {
+test('text reads at 4.5:1, and status colours, switches, focus and muted text at 3:1, on the content and the body around it, in both modes', function (string $theme) {
     $c = $theme::colors();
-    [$page, $darkPage] = [$c['content-bg'], $c['dark-content-bg']];
 
     expect(contrast('#ffffff', $c['ui-accent-bg']))->toBeGreaterThanOrEqual(4.5)
-        ->and(contrast($c['ui-accent-text'], $page))->toBeGreaterThanOrEqual(4.5)
-        ->and(contrast($c['gray-600'], $page))->toBeGreaterThanOrEqual(4.5)
-        ->and(contrast($c['gray-500'], $page))->toBeGreaterThanOrEqual(3)
-        ->and(contrast($c['dark-ui-accent-text'], $darkPage))->toBeGreaterThanOrEqual(4.5)
-        ->and(contrast($c['dark-gray-400'], $darkPage))->toBeGreaterThanOrEqual(4.5)
-        ->and(contrast($c['dark-gray-500'], $darkPage))->toBeGreaterThanOrEqual(3)
         ->and(contrast('#ffffff', $c['switch-bg']))->toBeGreaterThanOrEqual(3);
 
-    foreach (['success', 'danger', 'focus-outline'] as $role) {
-        expect(contrast($c[$role], $page))->toBeGreaterThanOrEqual(3)
-            ->and(contrast($c["dark-{$role}"], $darkPage))->toBeGreaterThanOrEqual(3);
+    foreach ([[$c['content-bg'], $c['body-bg'], ''], [$c['dark-content-bg'], $c['dark-body-bg'], 'dark-']] as [$content, $body, $mode]) {
+        [$text, $muted] = $mode ? ['dark-gray-400', 'dark-gray-500'] : ['gray-600', 'gray-500'];
+
+        foreach ([$content, $body] as $ground) {
+            expect(contrast($c["{$mode}ui-accent-text"], $ground))->toBeGreaterThanOrEqual(4.5)
+                ->and(contrast($c[$text], $ground))->toBeGreaterThanOrEqual(4.5)
+                ->and(contrast($c[$muted], $ground))->toBeGreaterThanOrEqual(3);
+
+            foreach (['success', 'danger', 'focus-outline'] as $role) {
+                expect(contrast($c["{$mode}{$role}"], $ground))->toBeGreaterThanOrEqual(3);
+            }
+        }
     }
 })->with('themes');
 
-test('the palettes come through: Gruvbox is cream in light mode, bg0 in dark', function () {
-    $colors = Gruvbox::colors();
+test('a grey ramp without its ends is refused, not half-filled', function () {
+    Ramp::fill([100 => '#ffffff', 900 => '#000000'], toWhite: 0.75);
+})->throws(InvalidArgumentException::class);
 
-    expect($colors['content-bg'])->toBe('#fbf1c7')
-        ->and($colors['dark-content-bg'])->toBe('#282828')
-        ->and($colors['dark-success'])->toBe('#b8bb26');
+test('the theme picker still lists the themes when statamic.com can\'t be reached', function () {
+    putenv('STATAMIC_DOMAIN=http://127.0.0.1:9');
+    User::make()->email('jo@example.test')->makeSuper()->save();
+
+    try {
+        $themes = $this->actingAs(User::findByEmail('jo@example.test'))->getJson('/cp/themes')->assertOk()->json();
+    } finally {
+        putenv('STATAMIC_DOMAIN');
+    }
+
+    expect(collect($themes)->pluck('id')->all())->toBe(Themes::all()->keys()->all());
 });
 
 test('the theme picker lists the themes ahead of the Marketplace\'s', function () {
@@ -98,7 +112,16 @@ test('applying a theme saves it in the user\'s preferences as the picker would, 
     expect(User::findByEmail('jo@example.test')->preferences()['theme'] ?? null)->toBe(Gruvbox::preference())
         ->and(Color::cssVariables())->toContain('--theme-color-content-bg: #fbf1c7;')
         ->and(Color::cssVariables(dark: true))->toContain('--theme-color-content-bg: #282828;')
-        ->and(Color::cssVariables(dark: true))->toContain('--theme-color-gray-50: #fbf1c7;');
+        ->and(Color::cssVariables(dark: true))->toContain('--theme-color-gray-50: #fbf1c7;')
+        ->and(Color::cssVariables(dark: true))->toContain('--theme-color-success: #b8bb26;');
+});
+
+test('a theme can be named by its name as well as its id', function () {
+    User::make()->email('jo@example.test')->save();
+
+    $this->artisan('statamic:editor-themes:apply', ['theme' => 'Tokyo Night'])->assertSuccessful();
+
+    expect(User::findByEmail('jo@example.test')->preferences()['theme']['id'])->toBe('tokyo-night');
 });
 
 test('an unknown theme fails, naming the themes', function () {
@@ -117,7 +140,7 @@ test('it can be removed again, leaving Statamic\'s default', function () {
     expect(User::findByEmail('jo@example.test')->preferences()['theme'] ?? null)->toBeNull();
 });
 
-test('with several users it asks which; an unknown email fails', function () {
+test('with several users it needs an email; an unknown email fails', function () {
     User::make()->email('a@example.test')->save();
     User::make()->email('b@example.test')->save();
 

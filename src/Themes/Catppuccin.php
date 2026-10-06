@@ -9,8 +9,6 @@ final class Catppuccin extends Theme
 {
     public const string NAME = 'Catppuccin';
 
-    public const string SOURCE = 'https://github.com/catppuccin/catppuccin';
-
     public const array LIGHT_GRAYS = [
         100 => '#eff1f5', // Latte base
         150 => '#e6e9ef', // mantle

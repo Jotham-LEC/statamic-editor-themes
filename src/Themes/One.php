@@ -9,8 +9,6 @@ final class One extends Theme
 {
     public const string NAME = 'One';
 
-    public const string SOURCE = 'https://github.com/doomemacs/themes';
-
     public const array LIGHT_GRAYS = [
         100 => '#fafafa', // One Light bg
         150 => '#f0f0f0', // bg-alt

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.1 – 2026-10-06
+
+### Fixed
+- The themes stay in Preferences → Themes when statamic.com can't be reached (offline, firewalled, DNS down). Statamic catches only HTTP errors there, so a refused connection used to empty the whole list.
+- Contrast in light mode is measured against the body around the content, which is darker than the content itself. Links, status colours and muted text now reach their ratios on both. To get there, some greys are a step darker: Dracula's, Everforest's and Gruvbox's `gray-500`, and Solarized's and Tokyo Night's `gray-600`.
+- An accent that needs the whole way to black or white to read now gets there; the last step used to be skipped.
+- `editor-themes:apply` accepts a theme's name as well as its id, e.g. `"Tokyo Night"`.
+- A preference set from the command line now matches one saved by the picker: `body-border` is left at Statamic's default.
+
+### Changed
+- A theme whose grey ramp lacks shade 100 or 950, or has a colour that isn't six-digit hex, is refused with a clear error.
+- With no email, the commands count at most two users instead of loading them all.
+- `editor-themes:remove` says what happens on Pro: the user gets their role's or the site's default theme, if there is one.
+
 ## 1.0.0 – 2026-10-06
 
 Now **Editor Themes**, `jotham-lec/statamic-editor-themes`, open source under the MIT licence.

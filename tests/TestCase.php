@@ -17,7 +17,5 @@ abstract class TestCase extends AddonTestCase
         parent::getEnvironmentSetUp($app);
 
         $app['config']->set('statamic.editions.pro', false);
-        $app['config']->set('statamic.users.repository', 'file');
-        $app['config']->set('statamic.stache.stores.users.directory', __DIR__.'/__fixtures__/users');
     }
 }

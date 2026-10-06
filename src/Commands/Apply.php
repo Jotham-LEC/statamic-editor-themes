@@ -18,7 +18,7 @@ class Apply extends Command implements PromptsForMissingInput
 {
     use FindsUser, RunsInPlease;
 
-    protected $signature = 'statamic:editor-themes:apply {theme : The theme, e.g. gruvbox} {email? : The user to theme}';
+    protected $signature = 'statamic:editor-themes:apply {theme : The theme, e.g. gruvbox or "Tokyo Night"} {email? : The user to theme}';
 
     protected $description = 'Set a user\'s control-panel theme';
 

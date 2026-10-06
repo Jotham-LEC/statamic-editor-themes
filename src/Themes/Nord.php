@@ -12,8 +12,6 @@ final class Nord extends Theme
 {
     public const string NAME = 'Nord';
 
-    public const string SOURCE = 'https://www.nordtheme.com';
-
     public const array LIGHT_GRAYS = [
         100 => '#eceff4', // nord6
         150 => '#e5e9f0', // nord5

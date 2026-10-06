@@ -12,15 +12,13 @@ final class Dracula extends Theme
 {
     public const string NAME = 'Dracula';
 
-    public const string SOURCE = 'https://draculatheme.com/spec';
-
     public const array LIGHT_GRAYS = [
         100 => '#fffbeb', // Alucard background
         150 => '#efeddc', // floating
         200 => '#dedccf', // bg light
         300 => '#ceccc0', // bg dark
         400 => '#bcbab3', // bg darker
-        600 => '#6c664b', // comment
+        500 => '#6c664b', // comment
         800 => '#44475a', // Dracula selection
         850 => '#343746', // bg light
         900 => '#282a36', // background

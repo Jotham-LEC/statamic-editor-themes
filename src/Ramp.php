@@ -12,11 +12,17 @@ final class Ramp
     public const array SHADES = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800, 850, 900, 925, 950];
 
     /**
-     * @param  array<int, string>  $anchors  hex colours at some of the shades, always 50 and 950
+     * @param  array<int, string>  $anchors  hex colours at some of the shades, always 100 and 950
+     * @param  float  $toWhite  without a 50, how far the 100 is taken towards white for it
      * @return array<int, string> every shade, light to dark
      */
-    public static function fill(array $anchors): array
+    public static function fill(array $anchors, float $toWhite): array
     {
+        if (! isset($anchors[100], $anchors[950])) {
+            throw new \InvalidArgumentException('A grey ramp needs colours at 100 and 950.');
+        }
+
+        $anchors[50] ??= self::mix($anchors[100], '#ffffff', $toWhite);
         ksort($anchors);
         $shades = array_keys($anchors);
 
@@ -40,14 +46,28 @@ final class Ramp
         return self::fromOklab(array_map(fn (float $x, float $y) => $x + ($y - $x) * $t, $a, $b));
     }
 
-    /** @return array{float, float, float} */
-    private static function toOklab(string $hex): array
+    /**
+     * A six-digit hex colour's channels, in linear light.
+     *
+     * @return array{float, float, float}
+     */
+    public static function linear(string $hex): array
     {
-        [$r, $g, $b] = array_map(function (string $pair) {
+        if (! preg_match('/^#[0-9a-f]{6}$/i', $hex)) {
+            throw new \InvalidArgumentException("Not a six-digit hex colour: {$hex}");
+        }
+
+        return array_map(function (string $pair) {
             $c = hexdec($pair) / 255;
 
             return $c <= 0.04045 ? $c / 12.92 : (($c + 0.055) / 1.055) ** 2.4;
-        }, str_split(ltrim($hex, '#'), 2));
+        }, str_split(substr($hex, 1), 2));
+    }
+
+    /** @return array{float, float, float} */
+    private static function toOklab(string $hex): array
+    {
+        [$r, $g, $b] = self::linear($hex);
 
         $l = (0.4122214708 * $r + 0.5363325363 * $g + 0.0514459929 * $b) ** (1 / 3);
         $m = (0.2119034982 * $r + 0.6806995451 * $g + 0.1073969566 * $b) ** (1 / 3);

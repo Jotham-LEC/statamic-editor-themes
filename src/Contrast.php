@@ -12,18 +12,22 @@ final class Contrast
 {
     public static function ratio(string $a, string $b): float
     {
-        [$light, $dark] = [max(self::luminance($a), self::luminance($b)), min(self::luminance($a), self::luminance($b))];
+        [$x, $y] = [self::luminance($a), self::luminance($b)];
 
-        return ($light + 0.05) / ($dark + 0.05);
+        return (max($x, $y) + 0.05) / (min($x, $y) + 0.05);
     }
 
-    /** `$color`, moved away from `$ground` in lightness until they contrast by `$ratio`. */
+    /**
+     * `$color`, moved away from `$ground` in lightness, in fiftieths of the way
+     * to black or white, until they contrast by `$ratio`, or as far as it goes.
+     */
     public static function ensure(string $color, string $ground, float $ratio): string
     {
         $away = self::luminance($ground) > 0.18 ? '#000000' : '#ffffff';
+        $adjusted = $color;
 
-        for ($t = 0.0, $adjusted = $color; $t <= 1 && self::ratio($adjusted, $ground) < $ratio; $t += 0.02) {
-            $adjusted = Ramp::mix($color, $away, $t);
+        for ($step = 1; $step <= 50 && self::ratio($adjusted, $ground) < $ratio; $step++) {
+            $adjusted = Ramp::mix($color, $away, $step / 50);
         }
 
         return $adjusted;
@@ -31,11 +35,7 @@ final class Contrast
 
     private static function luminance(string $hex): float
     {
-        [$r, $g, $b] = array_map(function (string $pair) {
-            $c = hexdec($pair) / 255;
-
-            return $c <= 0.04045 ? $c / 12.92 : (($c + 0.055) / 1.055) ** 2.4;
-        }, str_split(ltrim($hex, '#'), 2));
+        [$r, $g, $b] = Ramp::linear($hex);
 
         return 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
     }

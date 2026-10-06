@@ -9,15 +9,12 @@ final class Everforest extends Theme
 {
     public const string NAME = 'Everforest';
 
-    public const string SOURCE = 'https://github.com/sainnhe/everforest';
-
     public const array LIGHT_GRAYS = [
         100 => '#fdf6e3', // light bg0
         150 => '#f4f0d9', // bg1
         200 => '#efebd4', // bg2
         300 => '#e0dcc7', // bg4
-        400 => '#bdc3af', // bg5
-        500 => '#829181', // grey2
+        400 => '#939f91', // grey1
         600 => '#5c6a72', // fg
         850 => '#343f44', // dark bg1
         900 => '#2d353b', // bg0

@@ -12,8 +12,6 @@ final class RosePine extends Theme
 {
     public const string NAME = 'Rosé Pine';
 
-    public const string SOURCE = 'https://rosepinetheme.com';
-
     public const array LIGHT_GRAYS = [
         50 => '#fffaf3', // Dawn surface
         100 => '#faf4ed', // base

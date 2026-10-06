@@ -4,6 +4,7 @@ namespace JothamLec\EditorThemes;
 
 use Illuminate\Support\Collection;
 use Statamic\Marketplace\Marketplace as StatamicMarketplace;
+use Throwable;
 
 /**
  * Preferences → Themes lists the themes the Statamic Marketplace returns, so
@@ -13,6 +14,14 @@ class Marketplace extends StatamicMarketplace
 {
     public function themes(): Collection
     {
-        return Themes::all()->map(fn (string $theme) => $theme::picker())->values()->concat(parent::themes());
+        // Statamic catches only HTTP errors, so a site that can't reach statamic.com
+        // (offline, firewalled, DNS down) would otherwise lose these themes too.
+        try {
+            $marketplace = parent::themes();
+        } catch (Throwable) {
+            $marketplace = collect();
+        }
+
+        return Themes::all()->map(fn (string $theme) => $theme::picker())->values()->concat($marketplace);
     }
 }

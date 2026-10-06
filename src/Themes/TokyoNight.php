@@ -9,8 +9,6 @@ final class TokyoNight extends Theme
 {
     public const string NAME = 'Tokyo Night';
 
-    public const string SOURCE = 'https://github.com/folke/tokyonight.nvim';
-
     public const array LIGHT_GRAYS = [
         100 => '#e1e2e7', // Day bg
         150 => '#d0d5e3', // bg_dark
@@ -18,6 +16,7 @@ final class TokyoNight extends Theme
         300 => '#a8aecb', // fg_gutter
         400 => '#848cb5', // comment
         500 => '#68709a', // dark5
+        600 => '#414868', // Night terminal_black
         800 => '#3b4261', // Night fg_gutter
         850 => '#292e42', // bg_highlight
         900 => '#1a1b26', // bg

@@ -24,4 +24,4 @@ The MIT licence, under which each MIT palette above is used:
 >
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Tokyo Night is licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0. Its colours are used here unchanged, except that a few are darkened or lightened for contrast, as the README describes.
+Tokyo Night is licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0. Its colours are used here unchanged, except that a few are darkened or lightened for contrast and the grey shades between its own are mixed from them, as the README describes.

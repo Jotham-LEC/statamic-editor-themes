@@ -14,21 +14,16 @@ final class Gruvbox extends Theme
 {
     public const string NAME = 'Gruvbox';
 
-    public const string SOURCE = 'https://github.com/morhetz/gruvbox';
-
     public const array LIGHT_GRAYS = [
-        // bg0 three quarters of the way to white: Statamic's buttons and
-        // dropdowns fade from white to gray-50, so this keeps the fade faint.
-        50 => '#fdfcf5',
         100 => '#fbf1c7', // bg0
         150 => '#f2e5bc', // bg0_s
         200 => '#ebdbb2', // bg1
         300 => '#d5c4a1', // bg2
         400 => '#bdae93', // bg3
-        500 => '#928374', // gray
-        600 => '#665c54', // bg3 (dark)
-        700 => '#504945', // bg2
-        800 => '#3c3836', // bg1
+        500 => '#7c6f64', // fg4
+        600 => '#665c54', // fg3
+        700 => '#504945', // fg2
+        800 => '#3c3836', // fg1
         850 => '#32302f', // bg0_s
         900 => '#282828', // bg0
         950 => '#1d2021', // bg0_h

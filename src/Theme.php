@@ -8,23 +8,22 @@ use Illuminate\Support\Str;
  * An editor colour scheme as a Statamic control-panel theme: a light variant
  * and a dark one, each a grey ramp and five accents.
  *
- * Statamic's grey ramp runs from the page (50) to the darkest surface (950)
- * in both modes. In light mode the page is the light end, in dark mode the
- * dark end, and the other end is the text. Each variant places its palette's
- * neutrals at the shades they suit, and Ramp mixes the rest.
+ * Statamic's grey ramp runs from the lightest shade (50) to the darkest (950)
+ * in both modes. In light mode the page sits near the light end, in dark mode
+ * near the dark end, and the text at the other. Each variant places its
+ * palette's neutrals at the shades they suit, and Ramp mixes the rest.
  *
  * The accents are `blue` for links, `green` for success and switches, `red`
  * for danger, `yellow` for the progress bar and `aqua` for focus, each the
- * palette's nearest colour, and Contrast takes any too pale to read darker.
+ * palette's nearest colour, and Contrast takes any too pale to read darker,
+ * measured against the page's darker ground in light mode (the body around
+ * the content) and its lighter one in dark mode (the content).
  * Buttons carry white text, so they take the light variant's blue in both
  * modes, or `BUTTON`.
  */
 abstract class Theme
 {
     public const string NAME = '';
-
-    /** Where the palette comes from, for the credits. */
-    public const string SOURCE = '';
 
     /** @var array<int, string> */
     public const array LIGHT_GRAYS = [];
@@ -81,10 +80,10 @@ abstract class Theme
     {
         // Unless a theme sets it, gray-50 is the 100 shade most of the way to white: in
         // light mode Statamic's buttons and dropdowns fade from white to it, so it stays near white.
-        $light = Ramp::fill(static::LIGHT_GRAYS + [50 => Ramp::mix(static::LIGHT_GRAYS[100], '#ffffff', 0.75)]);
-        $dark = Ramp::fill(static::DARK_GRAYS + [50 => Ramp::mix(static::DARK_GRAYS[100], '#ffffff', 0.5)]);
+        $light = Ramp::fill(static::LIGHT_GRAYS, toWhite: 0.75);
+        $dark = Ramp::fill(static::DARK_GRAYS, toWhite: 0.5);
         [$l, $d] = [static::LIGHT, static::DARK];
-        [$ground, $darkGround] = [$light[100], $dark[925]];
+        [$ground, $darkGround] = [$light[150], $dark[925]];
 
         // Text at 4.5:1; switches, status colours and the focus ring at 3:1.
         $button = Contrast::ensure(static::BUTTON ?? $l['blue'], '#ffffff', 4.5);
@@ -95,9 +94,9 @@ abstract class Theme
             'ui-accent-bg' => $button,
             'ui-accent-text' => Contrast::ensure($l['blue'], $ground, 4.5),
             'global-header-bg' => $light[850],
-            'body-bg' => $light[150],
-            'body-border' => 'transparent',
-            'content-bg' => $ground,
+            // body-border is left at Statamic's default, transparent, as the picker would save it.
+            'body-bg' => $ground,
+            'content-bg' => $light[100],
             'content-border' => $light[300],
             'progress-bar' => $l['yellow'],
             'focus-outline' => Contrast::ensure($l['aqua'], $ground, 3),
