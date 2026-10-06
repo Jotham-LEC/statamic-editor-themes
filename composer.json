@@ -1,0 +1,46 @@
+{
+    "name": "jotham-lec/statamic-gruvbox",
+    "description": "Gruvbox light and dark for the Statamic 6 control panel.",
+    "type": "statamic-addon",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "JothamLec\\Gruvbox\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JothamLec\\Gruvbox\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^8.3",
+        "statamic/cms": "^6.30"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.20",
+        "orchestra/testbench": "^10.8|^11.0",
+        "pestphp/pest": "^4.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true,
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "statamic": {
+            "name": "Gruvbox",
+            "description": "Gruvbox light and dark for the control panel",
+            "slug": "gruvbox"
+        },
+        "laravel": {
+            "providers": [
+                "JothamLec\\Gruvbox\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
