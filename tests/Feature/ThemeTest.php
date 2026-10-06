@@ -25,7 +25,7 @@ test('the theme sets every colour Statamic themes, in light mode and dark', func
 });
 
 test('the grey ramp is Gruvbox\'s neutrals, light to dark', function () {
-    expect(Theme::GRAYS[50])->toBe('#f9f5d7')
+    expect(Theme::GRAYS[100])->toBe('#fbf1c7')
         ->and(Theme::GRAYS[925])->toBe('#282828')
         ->and(Theme::GRAYS[950])->toBe('#1d2021');
 });
@@ -52,7 +52,7 @@ test('applying it saves the theme in the user\'s preferences, which the control 
     $this->actingAs(User::findByEmail('jo@example.test'));
 
     expect(User::findByEmail('jo@example.test')->preferences()['theme'] ?? null)->toBe(Theme::preference())
-        ->and(Color::cssVariables())->toContain('--theme-color-content-bg: #f9f5d7;')
+        ->and(Color::cssVariables())->toContain('--theme-color-content-bg: #fbf1c7;')
         ->and(Color::cssVariables(dark: true))->toContain('--theme-color-content-bg: #282828;')
         ->and(Color::cssVariables(dark: true))->toContain('--theme-color-success: #b8bb26;');
 });
@@ -75,16 +75,4 @@ test('with several users it asks which; an unknown email fails', function () {
 
     expect(User::findByEmail('b@example.test')->preferences()['theme'] ?? null)->toBe(Theme::preference())
         ->and(User::findByEmail('a@example.test')->preferences()['theme'] ?? null)->toBeNull();
-});
-
-test('the control panel gets Gruvbox\'s solid buttons only while someone uses the theme', function () {
-    $user = tap(User::make()->email('jo@example.test')->makeSuper()->setPreference('theme', Theme::preference()))->save();
-
-    $this->actingAs($user)->get(cp_route('dashboard'))->assertOk()
-        ->assertSee('<style id="gruvbox">', false)
-        ->assertSee('background-image: none', false);
-
-    $user->removePreference('theme')->save();
-
-    $this->actingAs($user)->get(cp_route('dashboard'))->assertOk()->assertDontSee('<style id="gruvbox">', false);
 });

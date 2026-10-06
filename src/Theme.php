@@ -2,23 +2,23 @@
 
 namespace JothamLec\Gruvbox;
 
-use Statamic\Facades\Preference;
-
 /**
  * Gruvbox (github.com/morhetz/gruvbox) as a Statamic control-panel theme, in
  * the shape Statamic saves a user's `theme` preference: an id, a name, and
  * the colours, with dark mode's as `dark-` keys beside the light ones.
  *
  * Statamic's grey ramp runs from the page (50) to the darkest surface (950),
- * and dark mode draws from its dark end, so Gruvbox's fourteen neutrals, from
- * light bg0_h to dark bg0_h, are one ramp for both modes. Only the accents
+ * and dark mode draws from its dark end, so Gruvbox's neutrals, from light
+ * cream to dark bg0_h, are one ramp for both modes. Only the accents
  * change: Gruvbox's faded colours on cream, its bright ones on dark.
  */
 final class Theme
 {
     /** The neutrals, light to dark. */
     public const array GRAYS = [
-        50 => '#f9f5d7',  // bg0_h (light)
+        // Gruvbox's lightest cream three quarters of the way to white: Statamic's
+        // buttons and dropdowns fade from white to gray-50, so this keeps the fade faint.
+        50 => '#fdfcf5',
         100 => '#fbf1c7', // bg0
         150 => '#f2e5bc', // bg0_s
         200 => '#ebdbb2', // bg1
@@ -64,24 +64,6 @@ final class Theme
     }
 
     /**
-     * Whether the person looking at the control panel uses this theme.
-     */
-    public static function isActive(): bool
-    {
-        $theme = Preference::get('theme');
-
-        return is_array($theme) && ($theme['name'] ?? null) === self::preference()['name'];
-    }
-
-    /**
-     * What colours alone cannot do: solid, bordered buttons without gradients.
-     */
-    public static function css(): string
-    {
-        return (string) file_get_contents(__DIR__.'/../resources/css/gruvbox.css');
-    }
-
-    /**
      * @return array<string, string>
      */
     public static function colors(): array
@@ -96,7 +78,7 @@ final class Theme
             'global-header-bg' => self::GRAYS[850],
             'body-bg' => self::GRAYS[150],
             'body-border' => 'transparent',
-            'content-bg' => self::GRAYS[50],
+            'content-bg' => self::GRAYS[100],
             'content-border' => self::GRAYS[300],
             'progress-bar' => self::LIGHT['yellow'],
             'focus-outline' => self::LIGHT['aqua'],

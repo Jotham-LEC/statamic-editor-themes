@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 – 2026-10-06
+
+### Changed
+- Back to Statamic's convention, a theme of colours only: the button stylesheet is gone, and Statamic's own gradients stay. `gray-50` is a near-white cream (`#fdfcf5`) so they stay faint, and the main area is Gruvbox's `bg0` cream. Rerun `php please gruvbox:apply`: the colours are copied into the preference.
+
 ## 0.2.0 – 2026-10-06
 
 ### Changed
