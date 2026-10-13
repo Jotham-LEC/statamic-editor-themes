@@ -43,16 +43,6 @@ Themes can be named by id or name. The ids are `catppuccin`, `dracula`, `everfor
 
 ![The themes in Statamic's theme picker](https://raw.githubusercontent.com/Jotham-LEC/statamic-editor-themes/main/art/picker.png)
 
-## How the colours are chosen
-
-Each theme lives in its own class in `src/Themes`, and every colour is the original palette's own hex value, labelled with its name in that palette.
-
-- **Greys.** Statamic shades its interface with a 14-step grey ramp, 50 to 950. Each version of a theme puts its palette's background, surface, comment and foreground colours at the steps where they belong. The steps in between are mixed in OKLab.
-- **Accents.** Each theme uses its palette's blue for links and buttons, green for success and switches, red for danger, yellow for the progress bar and cyan for focus. Where a palette has no colour of that kind, it uses the nearest one: Dracula's purple, or Rosé Pine's pine and foam.
-- **Contrast.** Some palettes have accents that are too light for this use, Solarized's and Everforest's light ones for example. Those accents are darkened (or, in dark mode, lightened) only as far as needed. On the page, in both modes, text reaches 4.5:1 and status colours and the focus ring reach 3:1 (WCAG AA), against the body around the content as well as the content itself; white text reaches 4.5:1 on buttons and the white knob 3:1 on switches. The tests check every theme against these ratios.
-
-The addon adds its themes to the picker by extending the call that fetches Marketplace themes. It changes no core files and stores nothing beyond the theme preference Statamic already keeps. Choosing one of these themes sends nothing to statamic.com: Statamic only reports Marketplace themes, which have numeric ids. If statamic.com can't be reached, the picker still lists these themes.
-
 ## Develop
 
 ```bash
